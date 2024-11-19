@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import '../assets/style/authpage.css'; 
 
 function AuthPage() {
     const [username, setUsername] = useState('');
@@ -17,7 +18,11 @@ function AuthPage() {
     return (
         <div className="auth-container">
             <h2>Page d'authentification</h2>
-            <img src="business-finance-logo-template-illustration-free-vector-removebg-preview.png" alt="Logo" className="logo" />
+            <img
+                src="./logoFinance.png"
+                alt="Logo"
+                className="logo"
+            />
             <form className="auth-form">
                 <input
                     type="text"
@@ -36,7 +41,9 @@ function AuthPage() {
                     <option value="secretaire">Secrétaire</option>
                     <option value="utilisateur">Utilisateur</option>
                 </select>
-                <button type="button" onClick={handleLogin}>Se connecter</button>
+                <button type="button" onClick={handleLogin}>
+                    Se connecter
+                </button>
             </form>
         </div>
     );
