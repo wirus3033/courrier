@@ -1,6 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Label } from 'recharts';
-import { Card, CardContent, Typography, Grid } from '@mui/material';
+import { Card, CardContent, Typography, Grid, colors } from '@mui/material';
 
 // Dummy data for the line chart
 const data = [
@@ -39,7 +39,7 @@ const Dashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Total Parrain</Typography>
+              <Typography variant="h6">Total Couriers</Typography>
               <Typography variant="h4">024</Typography>
             </CardContent>
           </Card>
@@ -47,7 +47,7 @@ const Dashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Total Enfants</Typography>
+              <Typography variant="h6">Total Utilisateurs</Typography>
               <Typography variant="h4">560</Typography>
             </CardContent>
           </Card>
@@ -55,7 +55,7 @@ const Dashboard = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Total Dons</Typography>
+              <Typography variant="h6">Total Direction</Typography>
               <Typography variant="h4">23</Typography>
             </CardContent>
           </Card>
@@ -119,7 +119,7 @@ const Dashboard = () => {
         </Grid>
 
         {/* Recent Activities */}
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6">Récentes Activités</Typography>
@@ -132,7 +132,7 @@ const Dashboard = () => {
               </ul>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
     </div>
   );
