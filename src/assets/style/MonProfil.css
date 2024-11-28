@@ -1,0 +1,61 @@
+.full-screen-container {
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+    height: 100vh;
+    /* background-color: #f4f4f4; */
+    margin: 0;
+    padding: 20px;
+  }
+  
+  .profile-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    /* background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+  }
+  
+  .profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007bff;
+  }
+  
+  .edit-button {
+    height: 40px;
+  }
+  
+  .profile-info .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .password-section {
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  .password-button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .password-button:hover {
+    background-color: #0056b3;
+  }
+  
