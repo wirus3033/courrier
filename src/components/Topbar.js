@@ -8,7 +8,7 @@ const Topbar = () => {
       position="static" 
       style={{ 
         background: '#129bc0', 
-        borderBottom: '2px solid white' 
+        borderBottom: '1px solid white' 
       }}
     >
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
