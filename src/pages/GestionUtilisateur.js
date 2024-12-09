@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { Modal, Button, Form } from 'react-bootstrap';
+
+
+
+
 
 function GestionUtilisateur() {
   const [showModal, setShowModal] = useState(false);
@@ -15,7 +19,38 @@ function GestionUtilisateur() {
     fonction: '',
   });
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [directions, setDirections] = useState([]);  
+  const [fonctions, setFonctions] = useState([]); 
 
+
+
+
+  useEffect(() => {
+    const loadDirections = async () => {
+        try {
+            const response = await fetch('http://localhost:4000/api/directions', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : ''}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des directions');
+            }
+
+            const data = await response.json();
+            setDirections(data);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des directions :', error);
+            setDirections([]);
+        }
+    };
+
+    loadDirections();
+}, []);
+
+
+  
   const handleShowModal = (action, user = {}) => {
     setModalAction(action);
     setCurrentUser({
@@ -23,7 +58,7 @@ function GestionUtilisateur() {
       nom: user.nom || '',
       prenom: user.prenom || '',
       matricule: user.matricule || '',
-      direction: user.direction || '',
+      direction: user.direction || '',  
       fonction: user.fonction || '',
     });
     setShowModal(true);
@@ -48,19 +83,63 @@ function GestionUtilisateur() {
 
   const handleCloseAlertModal = () => setShowAlertModal(false);
 
-  const handleSave = () => {
-    if (modalAction === 'Ajouter') {
-      console.log('Nouvel utilisateur ajouté :', currentUser);
-    } else if (modalAction === 'Modifier') {
-      console.log('Utilisateur modifié :', currentUser);
-    }
-    setShowModal(false);
-  };
+  const handleSave = async () => {
+    try {
+        const url = modalAction === 'Ajouter' ? 'http://localhost:4000/api/register' : `http://localhost:4000/api/users/${currentUser.id}`;
+        const method = modalAction === 'Ajouter' ? 'POST' : 'PUT';
 
-  const handleDelete = () => {
-    console.log('Utilisateur supprimé : ID', selectedUserId);
-    setShowAlertModal(false);
-  };
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : ''}`,
+            },
+            body: JSON.stringify({
+                pseudo: currentUser.pseudo || '',
+                passe: currentUser.passe || 'password', // Temp password
+                nom: currentUser.nom,
+                prenom: currentUser.prenom,
+                matricule: currentUser.matricule,
+                direction: currentUser.direction,
+                fonction: currentUser.fonction,
+                acces: modalAction === 'Ajouter' ? 3 : undefined, // Default "utilisateur" access
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de l\'ajout/modification de l\'utilisateur');
+        }
+
+        setShowModal(false);
+        alert('Utilisateur enregistré avec succès.');
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+};
+
+
+  const handleDelete = async () => {
+    try {
+        const response = await fetch(`http://localhost:4000/api/users/${selectedUserId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : ''}`
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la suppression de l\'utilisateur');
+        }
+
+        alert('Utilisateur supprimé avec succès.');
+        setShowAlertModal(false);
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+};
+
 
   const utilisateurs = [
     { id: 1, nom: 'Doe', prenom: 'John', matricule: 'M123', direction: 'DSI', fonction: 'Développeur' },
@@ -150,20 +229,35 @@ function GestionUtilisateur() {
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Direction</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentUser.direction}
-                onChange={(e) => setCurrentUser({ ...currentUser, direction: e.target.value })}
-              />
-            </Form.Group>
+  <Form.Label>Direction</Form.Label>
+  <Form.Control
+    as="select"
+    value={currentUser.direction}
+    onChange={(e) => setCurrentUser({ ...currentUser, direction: e.target.value })}
+  >
+    <option value="">Sélectionner une direction</option>
+    {Array.isArray(directions) && directions.map((direction) => (
+      <option key={direction.id_directions} value={direction.nom_direction}>
+        {direction.nom_direction}
+      </option>
+    ))}
+  </Form.Control>
+</Form.Group>
+
             <Form.Group>
               <Form.Label>Fonction</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 value={currentUser.fonction}
                 onChange={(e) => setCurrentUser({ ...currentUser, fonction: e.target.value })}
-              />
+              >
+                <option value="">Sélectionner une fonction</option>
+                {fonctions.map((fonction) => (
+                  <option key={fonction.id_fonction} value={fonction.nom_fonction}>
+                    {fonction.nom_fonction}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>

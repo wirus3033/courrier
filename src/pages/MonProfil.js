@@ -25,11 +25,6 @@ function MonProfil() {
     <div className="full-screen-container">
       <div className="profile-wrapper">
         <div className="profile-header">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="Profil"
-            className="profile-image"
-          />
           <Button variant="info" onClick={handleEditProfile} className="edit-button">
             Éditer mon profil
           </Button>
