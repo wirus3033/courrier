@@ -20,53 +20,31 @@ const PrivateRoute = ({ children }) => {
 const App = () => {
   return (
     <Router>
-<Routes>
-  <Route path="/auth" element={<AuthPage />} />
-  <Route
-    path="/*"
-    element={
-      <PrivateRoute>
-        <Topbar />
-        <div style={{ display: 'flex', height: '100vh' }}>
-          <Sidebar />
-          <div style={{ marginLeft: '200px', padding: '20px', flex: 1 }}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/MonProfil" element={<MonProfil />} />
-              <Route
-                path="/GestionCourrier"
-                element={
-                  <PrivateRoute allowedRoles={['secretaire', 'administrateur']}>
-                    <GestionCourrier />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/GestionDirection"
-                element={
-                  <PrivateRoute allowedRoles={['administrateur']}>
-                    <GestionDirection />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/GestionUtilisateur"
-                element={
-                  <PrivateRoute allowedRoles={['administrateur']}>
-                    <GestionUtilisateur />
-                  </PrivateRoute>
-                }
-              />
-              <Route path="/Apropos" element={<Apropos />} />
-              <Route path="/Courrier" element={<Courrier />} />
-            </Routes>
-          </div>
-        </div>
-      </PrivateRoute>
-    }
-  />
-</Routes>
-
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+        <Route
+          path="/*"
+          element={
+            <PrivateRoute>
+              <Topbar />
+              <div style={{ display: 'flex', height: '100vh' }}>
+                <Sidebar />
+                <div style={{ marginLeft: '200px', padding: '20px', flex: 1 }}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/MonProfil" element={<MonProfil />} />
+                    <Route path="/GestionCourrier" element={<GestionCourrier />} />
+                    <Route path="/Courrier" element={<Courrier />} />
+                    <Route path="/GestionDirection" element={<GestionDirection />} />
+                    <Route path="/GestionUtilisateur" element={<GestionUtilisateur />} />
+                    <Route path="/Apropos" element={<Apropos />} />
+                  </Routes>
+                </div>
+              </div>
+            </PrivateRoute>
+          }
+        />
+      </Routes>
     </Router>
   );
 };
