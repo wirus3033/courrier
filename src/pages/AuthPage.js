@@ -44,9 +44,9 @@ function AuthPage() {
 
   return (
     <div className="auth-container">
-      <h2>Page d'authentification</h2>
-      <img src="./logoFinance.png" alt="Logo" className="logo" />
+
       <form className="auth-form" onSubmit={handleLogin}>
+        <img src="./logoFinance.png" alt="Logo" className="logo" />
         {error && <p className="error">{error}</p>}
         <input
           type="text"

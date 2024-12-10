@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #0066cc, #0099cc);
+    background: linear-gradient(to right, #4dc3f1, #fdfeff);
     color: #fff;
     font-family: Arial, sans-serif;
 }
@@ -17,19 +17,21 @@
 .logo {
     width: 250px;
     height: auto;
-    margin-bottom: 20px;
+    margin: 0 auto 20px;
     border-radius: 10px;
     padding: 10px;
+    display: block;
 }
 
 .auth-form {
     display: flex;
     flex-direction: column;
+
     gap: 20px;
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
     width: 400px;
 }
 
