@@ -50,7 +50,7 @@ function AuthPage() {
         {error && <p className="error">{error}</p>}
         <input
           type="text"
-          placeholder="Nom d'utilisateur"
+          placeholder="Votre Matricule"
           value={pseudo}
           onChange={(e) => setPseudo(e.target.value)}
           required
