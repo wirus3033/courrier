@@ -1,65 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { Modal, Button, Form } from 'react-bootstrap';
-
-
-
-
+import React, { useState, useEffect } from "react";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { Modal, Button, Form } from "react-bootstrap";
 
 function GestionUtilisateur() {
   const [showModal, setShowModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [modalAction, setModalAction] = useState(''); // "Ajouter" ou "Modifier"
+  const [modalAction, setModalAction] = useState(""); // "Ajouter" ou "Modifier"
   const [currentUser, setCurrentUser] = useState({
     id: null,
-    nom: '',
-    prenom: '',
-    matricule: '',
-    direction: '',
-    fonction: '',
+    nom: "",
+    prenom: "",
+    matricule: "",
+    direction: null,
+    fonction: "",
+    acces: null,
   });
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [directions, setDirections] = useState([]);  
-  const [fonctions, setFonctions] = useState([]); 
+  const [directions, setDirections] = useState([]);
+  const [fonctions, setFonctions] = useState([]);
+  const loadDirections = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/directions", {
+        headers: {
+          Authorization: `Bearer ${
+            localStorage.getItem("user")
+              ? JSON.parse(localStorage.getItem("user")).token
+              : ""
+          }`,
+        },
+      });
 
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des directions");
+      }
 
+      const data = await response.json();
+      setDirections(data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des directions :", error);
+      setDirections([]);
+    }
+  };
 
+  const loadUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/users", {
+        headers: {
+          Authorization: `Bearer ${
+            localStorage.getItem("user")
+              ? JSON.parse(localStorage.getItem("user")).token
+              : ""
+          }`,
+        },
+      });
 
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des utilisateurs");
+      }
+
+      const data = await response.json();
+      setUtilisateurs(data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des utilisateurs :", error);
+      setUtilisateurs([]);
+    }
+  };
   useEffect(() => {
-    const loadDirections = async () => {
-        try {
-            const response = await fetch('http://localhost:4000/api/directions', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : ''}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Erreur lors de la récupération des directions');
-            }
-
-            const data = await response.json();
-            setDirections(data);
-        } catch (error) {
-            console.error('Erreur lors de la récupération des directions :', error);
-            setDirections([]);
-        }
-    };
-
+    setFonctions([
+      {
+        id_fonction: 1,
+        nom_fonction: "administrateur",
+      },
+      {
+        id_fonction: 2,
+        nom_fonction: "sécretaire",
+      },
+      {
+        id_fonction: 3,
+        nom_fonction: "utilisateur",
+      },
+    ]);
+    loadUsers();
     loadDirections();
-}, []);
+  }, []);
 
-
-  
   const handleShowModal = (action, user = {}) => {
     setModalAction(action);
+    console.log(user, directions);
     setCurrentUser({
-      id: user.id || null,
-      nom: user.nom || '',
-      prenom: user.prenom || '',
-      matricule: user.matricule || '',
-      direction: user.direction || '',  
-      fonction: user.fonction || '',
+      id: user.id_utilisateur || null,
+      nom: user.nom_util || "",
+      prenom: user.prenom_util || "",
+      matricule: user.matricule_util || "",
+      direction: user.direction_util || null,
+      fonction: user.fonction_util || "",
     });
     setShowModal(true);
   };
@@ -68,11 +102,11 @@ function GestionUtilisateur() {
     setShowModal(false);
     setCurrentUser({
       id: null,
-      nom: '',
-      prenom: '',
-      matricule: '',
-      direction: '',
-      fonction: '',
+      nom: "",
+      prenom: "",
+      matricule: "",
+      direction: null,
+      fonction: "",
     });
   };
 
@@ -85,72 +119,83 @@ function GestionUtilisateur() {
 
   const handleSave = async () => {
     try {
-        const url = modalAction === 'Ajouter' ? 'http://localhost:4000/api/register' : `http://localhost:4000/api/users/${currentUser.id}`;
-        const method = modalAction === 'Ajouter' ? 'POST' : 'PUT';
+      const url =
+        modalAction === "Ajouter"
+          ? "http://localhost:4000/api/register"
+          : `http://localhost:4000/api/users/${currentUser.id}`;
+      const method = modalAction === "Ajouter" ? "POST" : "PUT";
 
-        const response = await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : ''}`,
-            },
-            body: JSON.stringify({
-                pseudo: currentUser.pseudo || '',
-                passe: currentUser.passe || 'password', // Temp password
-                nom: currentUser.nom,
-                prenom: currentUser.prenom,
-                matricule: currentUser.matricule,
-                direction: currentUser.direction,
-                fonction: currentUser.fonction,
-                acces: modalAction === 'Ajouter' ? 3 : undefined, // Default "utilisateur" access
-            }),
-        });
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            localStorage.getItem("user")
+              ? JSON.parse(localStorage.getItem("user")).token
+              : ""
+          }`,
+        },
+        body: JSON.stringify({
+          pseudo: currentUser.matricule,
+          passe: currentUser.passe || `${currentUser.matricule}.password`, // Temp password
+          nom: currentUser.nom,
+          prenom: currentUser.prenom,
+          matricule: currentUser.matricule,
+          direction: currentUser.direction,
+          fonction: currentUser.fonction,
+          acces: currentUser.acces,
+        }),
+      });
 
-        if (!response.ok) {
-            throw new Error('Erreur lors de l\'ajout/modification de l\'utilisateur');
-        }
-
-        setShowModal(false);
-        alert('Utilisateur enregistré avec succès.');
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'ajout/modification de l'utilisateur");
+      }
+      loadUsers();
+      setShowModal(false);
+      alert("Utilisateur enregistré avec succès.");
     } catch (error) {
-        console.error(error);
-        alert(error.message);
+      console.error(error);
+      alert(error.message);
     }
-};
-
+  };
 
   const handleDelete = async () => {
     try {
-        const response = await fetch(`http://localhost:4000/api/users/${selectedUserId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : ''}`
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la suppression de l\'utilisateur');
+      const response = await fetch(
+        `http://localhost:4000/api/users/${selectedUserId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${
+              localStorage.getItem("user")
+                ? JSON.parse(localStorage.getItem("user")).token
+                : ""
+            }`,
+          },
         }
+      );
 
-        alert('Utilisateur supprimé avec succès.');
-        setShowAlertModal(false);
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression de l'utilisateur");
+      }
+
+      alert("Utilisateur supprimé avec succès.");
+      setShowAlertModal(false);
     } catch (error) {
-        console.error(error);
-        alert(error.message);
+      console.error(error);
+      alert(error.message);
     }
-};
+  };
 
-
-  const utilisateurs = [
-    { id: 1, nom: 'Doe', prenom: 'John', matricule: 'M123', direction: 'DSI', fonction: 'Développeur' },
-    { id: 2, nom: 'Smith', prenom: 'Anna', matricule: 'M456', direction: 'RH', fonction: 'Manager' },
-    // Ajoutez plus d'utilisateurs ici
-  ];
+  const [utilisateurs, setUtilisateurs] = useState([]);
 
   return (
     <div className="gestion-container">
       <div className="header">
-        <button className="btn btn-primary" onClick={() => handleShowModal('Ajouter')}>
+        <button
+          className="btn btn-primary"
+          onClick={() => handleShowModal("Ajouter")}
+        >
           Nouvel utilisateur
         </button>
         <input
@@ -173,18 +218,18 @@ function GestionUtilisateur() {
         </thead>
         <tbody>
           {utilisateurs.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.nom}</td>
-              <td>{user.prenom}</td>
-              <td>{user.matricule}</td>
-              <td>{user.direction}</td>
-              <td>{user.fonction}</td>
+            <tr key={user.id_utilisateur}>
+              <td>{user.id_utilisateur}</td>
+              <td>{user.nom_util}</td>
+              <td>{user.prenom_util}</td>
+              <td>{user.matricule_util}</td>
+              <td>{user.direction_util || "-"}</td>
+              <td>{user.fonction_util}</td>
               <td>
                 <FaEdit
                   className="icon edit-icon"
                   title="Modifier"
-                  onClick={() => handleShowModal('Modifier', user)}
+                  onClick={() => handleShowModal("Modifier", user)}
                 />
                 <FaTrash
                   className="icon delete-icon"
@@ -209,7 +254,9 @@ function GestionUtilisateur() {
               <Form.Control
                 type="text"
                 value={currentUser.nom}
-                onChange={(e) => setCurrentUser({ ...currentUser, nom: e.target.value })}
+                onChange={(e) =>
+                  setCurrentUser({ ...currentUser, nom: e.target.value })
+                }
               />
             </Form.Group>
             <Form.Group>
@@ -217,7 +264,9 @@ function GestionUtilisateur() {
               <Form.Control
                 type="text"
                 value={currentUser.prenom}
-                onChange={(e) => setCurrentUser({ ...currentUser, prenom: e.target.value })}
+                onChange={(e) =>
+                  setCurrentUser({ ...currentUser, prenom: e.target.value })
+                }
               />
             </Form.Group>
             <Form.Group>
@@ -225,36 +274,61 @@ function GestionUtilisateur() {
               <Form.Control
                 type="text"
                 value={currentUser.matricule}
-                onChange={(e) => setCurrentUser({ ...currentUser, matricule: e.target.value })}
+                onChange={(e) =>
+                  setCurrentUser({ ...currentUser, matricule: e.target.value })
+                }
               />
             </Form.Group>
             <Form.Group>
-  <Form.Label>Direction</Form.Label>
-  <Form.Control
-    as="select"
-    value={currentUser.direction}
-    onChange={(e) => setCurrentUser({ ...currentUser, direction: e.target.value })}
-  >
-    <option value="">Sélectionner une direction</option>
-    {Array.isArray(directions) && directions.map((direction) => (
-      <option key={direction.id_directions} value={direction.nom_direction}>
-        {direction.nom_direction}
-      </option>
-    ))}
-  </Form.Control>
-</Form.Group>
+              <Form.Label>Direction</Form.Label>
+              <Form.Control
+                as="select"
+                value={currentUser.direction}
+                onChange={(e) =>
+                  setCurrentUser({
+                    ...currentUser,
+                    direction: e.target.value,
+                  })
+                }
+              >
+                <option value="">Sélectionner une direction</option>
+                {Array.isArray(directions) &&
+                  directions.map((direction) => (
+                    <option
+                      key={direction.id_direction}
+                      value={Number(direction.id_direction)}
+                    >
+                      {direction.nom_direction.charAt(0).toUpperCase() +
+                        direction.nom_direction.slice(1)}
+                    </option>
+                  ))}
+              </Form.Control>
+            </Form.Group>
 
             <Form.Group>
               <Form.Label>Fonction</Form.Label>
               <Form.Control
                 as="select"
                 value={currentUser.fonction}
-                onChange={(e) => setCurrentUser({ ...currentUser, fonction: e.target.value })}
+                onChange={(e) => {
+                  const selectedFonction = fonctions.find(
+                    (fonction) => fonction.nom_fonction === e.target.value
+                  );
+                  setCurrentUser({
+                    ...currentUser,
+                    fonction: e.target.value,
+                    acces: selectedFonction ? selectedFonction.id_fonction : 3,
+                  });
+                }}
               >
                 <option value="">Sélectionner une fonction</option>
                 {fonctions.map((fonction) => (
-                  <option key={fonction.id_fonction} value={fonction.nom_fonction}>
-                    {fonction.nom_fonction}
+                  <option
+                    key={fonction.id_fonction}
+                    value={fonction.nom_fonction}
+                  >
+                    {fonction.nom_fonction.charAt(0).toUpperCase() +
+                      fonction.nom_fonction.slice(1)}
                   </option>
                 ))}
               </Form.Control>
