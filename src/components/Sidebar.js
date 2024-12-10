@@ -67,7 +67,12 @@ const Sidebar = () => {
     >
       <List>
         {filteredMenuItems.map((item) => (
-          <ListItem button component={Link} to={item.path} key={item.label}>
+          <ListItem
+            button="true"
+            component={Link}
+            to={item.path}
+            key={item.label}
+          >
             <ListItemIcon style={{ color: "#fff" }}>
               {open
                 ? item.icon
@@ -78,7 +83,7 @@ const Sidebar = () => {
             )}
           </ListItem>
         ))}
-        <ListItem button onClick={handleLogout}>
+        <ListItem button="true" onClick={handleLogout}>
           <ListItemIcon style={{ color: "#fff" }}>
             {open ? <LogoutIcon /> : <LogoutIcon fontSize="small" />}
           </ListItemIcon>

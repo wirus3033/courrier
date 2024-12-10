@@ -44,7 +44,7 @@ function AuthPage() {
 
   return (
     <div className="auth-container">
-      {/* <h2>Page d'authentification</h2> */}
+      <h2>Page d'authentification</h2>
       <img src="./logoFinance.png" alt="Logo" className="logo" />
       <form className="auth-form" onSubmit={handleLogin}>
         {error && <p className="error">{error}</p>}
@@ -62,7 +62,6 @@ function AuthPage() {
           onChange={(e) => setPasse(e.target.value)}
           required
         />
-
         <button type="submit">Se connecter</button>
       </form>
     </div>
