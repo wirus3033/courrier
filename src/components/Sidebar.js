@@ -10,14 +10,20 @@ import GroupIcon from "@mui/icons-material/Group";
 import InfoIcon from "@mui/icons-material/Info";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../context/AuthContext";
+import {
+  Modal,
+  Button,
+} from "react-bootstrap"; 
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
     console.log("Déconnexion effectuée");
+    setModalOpen(false);
   };
 
   const menuItems = [
@@ -83,15 +89,37 @@ const Sidebar = () => {
             )}
           </ListItem>
         ))}
-        <ListItem button="true" onClick={handleLogout}>
+        <ListItem button="true" onClick={() => setModalOpen(true)}>
           <ListItemIcon style={{ color: "#fff" }}>
-            {open ? <LogoutIcon /> : <LogoutIcon fontSize="small" />}
+            <LogoutIcon />
           </ListItemIcon>
           {open && (
             <ListItemText primary="Déconnecter" style={{ color: "#fff" }} />
           )}
         </ListItem>
       </List>
+
+            {/* Modal de déconnexion */}
+            <Modal
+        show={modalOpen}
+        onHide={() => setModalOpen(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmation de déconnexion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Êtes-vous sûr de vouloir vous déconnecter ?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModalOpen(false)}>
+            Annuler
+          </Button>
+          <Button variant="danger" onClick={handleLogout}>
+            Déconnecter
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
