@@ -6,7 +6,6 @@ import "../assets/style/authpage.css";
 function AuthPage() {
   const [pseudo, setPseudo] = useState("");
   const [passe, setPasse] = useState("");
-  const [role, setRole] = useState("utilisateur");
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -45,13 +44,13 @@ function AuthPage() {
 
   return (
     <div className="auth-container">
-      <h2>Page d'authentification</h2>
+      {/* <h2>Page d'authentification</h2> */}
       <img src="./logoFinance.png" alt="Logo" className="logo" />
       <form className="auth-form" onSubmit={handleLogin}>
         {error && <p className="error">{error}</p>}
         <input
           type="text"
-          placeholder="Nom d'utilisateur"
+          placeholder="Votre Matricule"
           value={pseudo}
           onChange={(e) => setPseudo(e.target.value)}
           required
@@ -63,11 +62,7 @@ function AuthPage() {
           onChange={(e) => setPasse(e.target.value)}
           required
         />
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="administrateur">Administrateur</option>
-          <option value="secretaire">Secrétaire</option>
-          <option value="utilisateur">Utilisateur</option>
-        </select>
+
         <button type="submit">Se connecter</button>
       </form>
     </div>
