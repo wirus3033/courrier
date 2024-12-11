@@ -7,7 +7,7 @@ const Topbar = () => {
     <AppBar
       position="sticky"
       style={{
-        background: "#129bc0",
+        background: "#73A9AD",
         borderBottom: "1px solid white",
       }}
     >
