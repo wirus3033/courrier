@@ -6,14 +6,14 @@ import '../assets/style/GestionDirection.css';
 function GestionDirection() {
   const [directions, setDirections] = useState([]);
   const [filteredDirections, setFilteredDirections] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // État pour la recherche
+  const [searchTerm, setSearchTerm] = useState(''); 
   const [showModal, setShowModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [modalAction, setModalAction] = useState(''); // "Ajouter" ou "Modifier"
   const [currentDirection, setCurrentDirection] = useState('');
   const [selectedDirectionId, setSelectedDirectionId] = useState(null);
 
-  // Charger les données au chargement du composant
+  
   useEffect(() => {
     fetchDirections();
   }, []);
@@ -24,10 +24,10 @@ function GestionDirection() {
 
   const fetchDirections = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/directions'); // Remplacez par votre URL
+      const response = await fetch('http://localhost:4000/api/directions'); 
       const data = await response.json();
       setDirections(data);
-      setFilteredDirections(data); // Initialiser les données filtrées
+      setFilteredDirections(data); 
     } catch (error) {
       console.error('Erreur lors du chargement des directions :', error);
     }

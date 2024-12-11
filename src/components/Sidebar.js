@@ -64,7 +64,7 @@ const Sidebar = () => {
     <div
       style={{
         width: open ? "200px" : "60px",
-        background: "#129bc0",
+        background: "#73A9AD",
         height: "100vh",
         position: "fixed",
         transition: "width 0.3s",
