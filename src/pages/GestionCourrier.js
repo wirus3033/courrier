@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = "http://localhost:4000/api";
 
 function GestionCourrier() {
   const [courriers, setCourriers] = useState([]);
   const [utilisateurs, setUtilisateurs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [modalAction, setModalAction] = useState('');
+  const [modalAction, setModalAction] = useState("");
   const [currentCourrier, setCurrentCourrier] = useState({});
   const [selectedCourrierId, setSelectedCourrierId] = useState(null);
 
@@ -21,7 +21,8 @@ function GestionCourrier() {
   const fetchCourriers = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/courriers`);
-      if (!response.ok) throw new Error('Erreur lors de la récupération des courriers.');
+      if (!response.ok)
+        throw new Error("Erreur lors de la récupération des courriers.");
       const data = await response.json();
       setCourriers(data);
     } catch (error) {
@@ -32,7 +33,8 @@ function GestionCourrier() {
   const fetchUtilisateurs = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/users`);
-      if (!response.ok) throw new Error('Erreur lors de la récupération des utilisateurs.');
+      if (!response.ok)
+        throw new Error("Erreur lors de la récupération des utilisateurs.");
       const data = await response.json();
       setUtilisateurs(data);
     } catch (error) {
@@ -43,17 +45,18 @@ function GestionCourrier() {
   const handleShowModal = (action, courrier = {}) => {
     setModalAction(action);
     setCurrentCourrier({
-      date_arrivee: courrier.date_arrivee || '',
-      date_pre_reference: courrier.date_pre_reference || '',
-      pre_reference: courrier.pre_reference || '',
-      origin: courrier.origin || '',
-      reference: courrier.reference || '',
-      objet: courrier.objet || '',
-      classement: courrier.classement || '',
-      status: courrier.status || '',
-      utilisateur: courrier.utilisateur || '',
-      modifier_par: courrier.modifier_par || '',
+      date_arrivee: courrier.date_arrivee || "",
+      date_pre_reference: courrier.date_pre_reference || "",
+      pre_reference: courrier.pre_reference || "",
+      origine: courrier.origine || "",
+      reference: courrier.reference || "",
+      objet: courrier.objet || "",
+      classement: courrier.classement || "",
+      status: courrier.status || "",
+      utilisateur: courrier.utilisateur || "",
+      modifier_par: courrier.modifier_par || "",
     });
+    setSelectedCourrierId(courrier.id_courrier);
     setShowModal(true);
   };
 
@@ -71,17 +74,18 @@ function GestionCourrier() {
 
   const handleSave = async () => {
     try {
-      const method = modalAction === 'Ajouter' ? 'POST' : 'PUT';
+      const method = modalAction === "Ajouter" ? "POST" : "PUT";
       const url =
-        modalAction === 'Ajouter'
+        modalAction === "Ajouter"
           ? `${API_BASE_URL}/courriers`
           : `${API_BASE_URL}/courriers/${selectedCourrierId}`;
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(currentCourrier),
       });
-      if (!response.ok) throw new Error('Erreur lors de la sauvegarde du courrier.');
+      if (!response.ok)
+        throw new Error("Erreur lors de la sauvegarde du courrier.");
       fetchCourriers();
     } catch (error) {
       console.error(error);
@@ -91,10 +95,14 @@ function GestionCourrier() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/courriers/${selectedCourrierId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Erreur lors de la suppression du courrier.');
+      const response = await fetch(
+        `${API_BASE_URL}/courriers/${selectedCourrierId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok)
+        throw new Error("Erreur lors de la suppression du courrier.");
       fetchCourriers();
     } catch (error) {
       console.error(error);
@@ -102,10 +110,34 @@ function GestionCourrier() {
     handleCloseAlertModal();
   };
 
+  const getUserNameById = (id) => {
+    const user = utilisateurs.find((user) => user.id_utilisateur === id);
+    return user ? user.nom_util : "Utilisateur inconnu";
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    if (isNaN(date)) return "Date invalide";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  function capitalizeFirstLetters(val) {
+    return String(val)
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
   return (
     <div className="gestion-container">
       <div className="header">
-        <button className="btn btn-primary" onClick={() => handleShowModal('Ajouter')}>
+        <button
+          className="btn btn-primary"
+          onClick={() => handleShowModal("Ajouter")}
+        >
           Nouveau courrier
         </button>
         <input
@@ -130,18 +162,18 @@ function GestionCourrier() {
         <tbody>
           {courriers.map((courrier) => (
             <tr key={courrier.id_courrier}>
-              <td>{courrier.date_arrivee}</td>
+              <td>{formatDate(courrier.date_arrivee)}</td>
               <td>{courrier.pre_reference}</td>
               <td>{courrier.reference}</td>
               <td>{courrier.objet}</td>
               <td>{courrier.classement}</td>
               <td>{courrier.status}</td>
-              <td>{courrier.utilisateur}</td>
+              <td>{getUserNameById(courrier.utilisateur)}</td>
               <td>
                 <FaEdit
                   className="icon edit-icon"
                   title="Modifier"
-                  onClick={() => handleShowModal('Modifier', courrier)}
+                  onClick={() => handleShowModal("Modifier", courrier)}
                 />
                 <FaTrash
                   className="icon delete-icon"
@@ -153,8 +185,8 @@ function GestionCourrier() {
           ))}
         </tbody>
       </table>
-    {/* Modal d'ajout/modification */}
-    <Modal show={showModal} onHide={handleCloseModal} centered>
+      {/* Modal d'ajout/modification */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>{modalAction} un courrier</Modal.Title>
         </Modal.Header>
@@ -164,40 +196,71 @@ function GestionCourrier() {
               {Object.keys(currentCourrier).map((field, index) => (
                 <Col md={6} key={index} className="mb-3">
                   <Form.Group>
-                    <Form.Label>{field.replace('_', ' ')}</Form.Label>
-                    {field === 'status' ? (
+                    <Form.Label>
+                      {capitalizeFirstLetters(field.replaceAll("_", " "))}
+                    </Form.Label>
+                    {field === "status" ? (
                       <Form.Control
                         as="select"
-                        value={currentCourrier[field] || ''}
+                        value={currentCourrier[field] || ""}
                         onChange={(e) =>
-                          setCurrentCourrier({ ...currentCourrier, [field]: e.target.value })
+                          setCurrentCourrier({
+                            ...currentCourrier,
+                            [field]: e.target.value,
+                          })
                         }
                       >
                         <option value="">Choisir...</option>
                         <option value="INTERNE">INTERNE</option>
                         <option value="EXTERNE">EXTERNE</option>
                       </Form.Control>
-                    ) : field === 'utilisateur' ? (
+                    ) : field === "utilisateur" || field === "modifier_par" ? (
                       <Form.Control
                         as="select"
-                        value={currentCourrier[field] || ''}
+                        value={currentCourrier[field] || ""}
                         onChange={(e) =>
-                          setCurrentCourrier({ ...currentCourrier, [field]: e.target.value })
+                          setCurrentCourrier({
+                            ...currentCourrier,
+                            [field]: e.target.value,
+                          })
                         }
                       >
                         <option value="">Choisir un utilisateur...</option>
                         {utilisateurs.map((user) => (
-                          <option key={user.id} value={user.nom_utilisateur}>
-                            {user.nom_utilisateur}
+                          <option
+                            key={user.id_utilisateur}
+                            value={user.id_utilisateur}
+                          >
+                            {user.nom_util}
                           </option>
                         ))}
                       </Form.Control>
                     ) : (
                       <Form.Control
-                        type={field.includes('date') ? 'date' : 'text'}
-                        value={currentCourrier[field] || ''}
+                        type={field.includes("date") ? "date" : "text"}
+                        value={
+                          field.includes("date")
+                            ? currentCourrier[field]
+                              ? (() => {
+                                  const date = new Date(currentCourrier[field]);
+                                  const year = date.getFullYear();
+                                  const month = String(
+                                    date.getMonth() + 1
+                                  ).padStart(2, "0");
+                                  const day = String(date.getDate()).padStart(
+                                    2,
+                                    "0"
+                                  );
+                                  return `${year}-${month}-${day}`; // Proper "yyyy-MM-dd" format
+                                })()
+                              : ""
+                            : currentCourrier[field] || ""
+                        }
                         onChange={(e) =>
-                          setCurrentCourrier({ ...currentCourrier, [field]: e.target.value })
+                          setCurrentCourrier({
+                            ...currentCourrier,
+                            [field]: e.target.value,
+                          })
                         }
                       />
                     )}
@@ -207,7 +270,7 @@ function GestionCourrier() {
             </Row>
           </Form>
         </Modal.Body>
-        <Modal.Footer        >
+        <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Annuler
           </Button>
