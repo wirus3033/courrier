@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-function GestionCourrier() {
+function CheckCourrier() {
   const [courriers, setCourriers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCourriers, setFilteredCourriers] = useState([]);
@@ -17,7 +17,7 @@ function GestionCourrier() {
 
   const fetchCourriers = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/sortant');
+      const response = await fetch('http://localhost:4000/api/entrant');
       const data = await response.json();
       setCourriers(data);
       setFilteredCourriers(data);
@@ -29,9 +29,8 @@ function GestionCourrier() {
   const filterCourriers = () => {
     const filtered = courriers.filter((courrier) =>
       courrier.numero_courrier.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      courrier.nom_prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      courrier.nom_responsable.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      courrier.observation.toLowerCase().includes(searchTerm.toLowerCase())
+      courrier.direction.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      courrier.refence_courrier.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredCourriers(filtered);
   };
@@ -52,20 +51,22 @@ function GestionCourrier() {
         <thead>
           <tr>
             <th>Numéro Courrier</th>
-            <th>Date Sortie</th>
-            <th>Observation</th>
-            <th>Nom et Prénom</th>
-            <th>Nom Responsable</th>
+            <th>Date Entrée</th>
+            <th>Direction</th>
+            <th>Date BE</th>
+            <th>Numéro BE</th>
+            <th>Référence Courrier</th>
           </tr>
         </thead>
         <tbody>
           {filteredCourriers.map((courrier) => (
-            <tr key={courrier.id_sortant}>
+            <tr key={courrier.id_entrant}>
               <td>{courrier.numero_courrier}</td>
-              <td>{courrier.date_sortie}</td>
-              <td>{courrier.observation}</td>
-              <td>{courrier.nom_prenom}</td>
-              <td>{courrier.nom_responsable}</td>
+              <td>{courrier.date_entree}</td>
+              <td>{courrier.direction}</td>
+              <td>{courrier.date_BE}</td>
+              <td>{courrier.numero_BE}</td>
+              <td>{courrier.refence_courrier}</td>
             </tr>
           ))}
         </tbody>
@@ -74,4 +75,4 @@ function GestionCourrier() {
   );
 }
 
-export default GestionCourrier;
+export default CheckCourrier;

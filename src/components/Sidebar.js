@@ -4,6 +4,7 @@ import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import DraftsIcon from "@mui/icons-material/Drafts";
 import BusinessIcon from "@mui/icons-material/Business";
 import GroupIcon from "@mui/icons-material/Group";
@@ -27,17 +28,35 @@ const Sidebar = () => {
   };
 
   const menuItems = [
-    { path: "/", label: "Dashboard", icon: <DashboardIcon /> },
+    { path: "/", label: "Dashboard", icon: <DashboardIcon />, roles: [1, 2],},
     { path: "/MonProfil", label: "Mon Profil", icon: <AccountCircleIcon /> },
+    // {
+    //   path: "/GestionCourrier",
+    //   label: "Gestion de Courrier",
+    //   icon: <MailOutlineIcon />,
+    //   roles: [1],
+    // },
     {
-      path: "/GestionCourrier",
-      label: "Gestion de Courrier",
+      path: "/CourrierEntrant",
+      label: " Courrier Entrant",
+      icon: <ForwardToInboxIcon />,
+      roles: [1, 2],
+    },
+    {
+      path: "/CourrierSortant",
+      label: "Courrier Sortant",
       icon: <MailOutlineIcon />,
-      roles: [1],
+      roles: [1, 2],
+    },
+    {
+      path: "/CheckCourrier",
+      label: "Courrier Entrant",
+      icon: <DraftsIcon />,
+      roles: [2, 3],
     },
     {
       path: "/Courrier",
-      label: "Courrier",
+      label: "Courrier Sortant",
       icon: <DraftsIcon />,
       roles: [2, 3],
     },

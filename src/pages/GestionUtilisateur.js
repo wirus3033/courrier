@@ -5,7 +5,8 @@ import { Modal, Button, Form } from "react-bootstrap";
 function GestionUtilisateur() {
   const [showModal, setShowModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [modalAction, setModalAction] = useState(""); // "Ajouter" ou "Modifier"
+  const [modalAction, setModalAction] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentUser, setCurrentUser] = useState({
     id: null,
     nom: "",
@@ -18,6 +19,8 @@ function GestionUtilisateur() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [directions, setDirections] = useState([]);
   const [fonctions, setFonctions] = useState([]);
+  const [utilisateurs, setUtilisateurs] = useState([]);
+
   const loadDirections = async () => {
     try {
       const response = await fetch("http://localhost:4000/api/directions", {
@@ -65,6 +68,7 @@ function GestionUtilisateur() {
       setUtilisateurs([]);
     }
   };
+
   useEffect(() => {
     setFonctions([
       {
@@ -83,6 +87,12 @@ function GestionUtilisateur() {
     loadUsers();
     loadDirections();
   }, []);
+
+  const filteredUtilisateurs = utilisateurs.filter((user) =>
+    user.nom_util?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.prenom_util?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.matricule_util?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleShowModal = (action, user = {}) => {
     setModalAction(action);
@@ -137,7 +147,7 @@ function GestionUtilisateur() {
         },
         body: JSON.stringify({
           pseudo: currentUser.matricule,
-          passe: currentUser.passe || `${currentUser.matricule}.password`, // Temp password
+          passe: currentUser.passe || `${currentUser.matricule}.password`,
           nom: currentUser.nom,
           prenom: currentUser.prenom,
           matricule: currentUser.matricule,
@@ -187,8 +197,6 @@ function GestionUtilisateur() {
     }
   };
 
-  const [utilisateurs, setUtilisateurs] = useState([]);
-
   return (
     <div className="gestion-container">
       <div className="header">
@@ -202,6 +210,8 @@ function GestionUtilisateur() {
           type="text"
           placeholder="Rechercher un utilisateur"
           className="search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
       <table className="direction-table">
@@ -217,13 +227,17 @@ function GestionUtilisateur() {
           </tr>
         </thead>
         <tbody>
-          {utilisateurs.map((user) => (
+          {filteredUtilisateurs.map((user) => (
             <tr key={user.id_utilisateur}>
               <td>{user.id_utilisateur}</td>
               <td>{user.nom_util}</td>
               <td>{user.prenom_util}</td>
               <td>{user.matricule_util}</td>
-              <td>{user.direction_util || "-"}</td>
+              <td>
+                {directions.find(
+                  (dir) => dir.id_direction === user.direction_util
+                )?.nom_direction || "-"}
+              </td>
               <td>{user.fonction_util}</td>
               <td>
                 <FaEdit
