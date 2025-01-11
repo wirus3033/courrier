@@ -5,7 +5,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
-import DraftsIcon from "@mui/icons-material/Drafts";
+import Outbox from "@mui/icons-material/Outbox";
 import BusinessIcon from "@mui/icons-material/Business";
 import GroupIcon from "@mui/icons-material/Group";
 import InfoIcon from "@mui/icons-material/Info";
@@ -45,19 +45,19 @@ const Sidebar = () => {
     {
       path: "/CourrierSortant",
       label: "Courrier Sortant",
-      icon: <MailOutlineIcon />,
+      icon: <Outbox />,
       roles: [1, 2],
     },
     {
       path: "/CheckCourrier",
       label: "Courrier Entrant",
-      icon: <DraftsIcon />,
+      icon: <ForwardToInboxIcon />,
       roles: [2, 3],
     },
     {
       path: "/Courrier",
       label: "Courrier Sortant",
-      icon: <DraftsIcon />,
+      icon: <Outbox />,
       roles: [2, 3],
     },
     {

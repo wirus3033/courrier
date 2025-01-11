@@ -177,9 +177,21 @@ function CourrierEntrant() {
             <tr key={courrier.id_entrant}>
               <td>{courrier.id_entrant}</td>
               <td>{courrier.numero_courrier}</td>
-              <td>{courrier.date_entree}</td>
+              <td>
+                {new Date(courrier.date_entree).toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                })}
+              </td>
               <td>{courrier.direction}</td>
-              <td>{courrier.date_BE}</td>
+              <td>
+                {new Date(courrier.date_BE).toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                })}
+              </td>
               <td>{courrier.numero_BE}</td>
               <td>{courrier.refence_courrier}</td>
               <td>
