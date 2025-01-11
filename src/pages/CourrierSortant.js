@@ -36,7 +36,10 @@ function CourrierSortant() {
       const data = await response.json();
       setCourrierEntrants(data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des courriers entrants:", error);
+      console.error(
+        "Erreur lors de la récupération des courriers entrants:",
+        error
+      );
     }
   };
 
@@ -171,7 +174,13 @@ function CourrierSortant() {
           {filteredCourriers.map((courrier) => (
             <tr key={courrier.id_sortant}>
               <td>{courrier.numero_courrier}</td>
-              <td>{courrier.date_sortie}</td>
+              <td>
+                {new Date(courrier.date_sortie).toLocaleDateString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                })}
+              </td>
               <td>{courrier.observation}</td>
               <td>{courrier.nom_prenom}</td>
               <td>{courrier.nom_responsable}</td>

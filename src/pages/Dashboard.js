@@ -1,99 +1,254 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Label } from 'recharts';
-import { Card, CardContent, Typography, Grid, colors } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  CircularProgress,
+} from "@mui/material";
+import {
+  MailOutline,
+  Outbox,
+  Business,
+  People,
+} from "@mui/icons-material"; // Import des icônes
 
-// Dummy data for the line chart
-const data = [
-  { name: 'Jan', users: 400, sales: 2400 },
-  { name: 'Feb', users: 300, sales: 2210 },
-  { name: 'Mar', users: 500, sales: 2290 },
-  { name: 'Apr', users: 278, sales: 2000 },
-  { name: 'May', users: 189, sales: 2181 },
-  { name: 'Jun', users: 239, sales: 2500 },
-];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-// Dummy data for the pie chart
-const pieData = [
-  { name: 'Dons', value: 400 },
-  { name: 'Parrainages', value: 300 },
-  { name: 'Éducation', value: 300 },
-  { name: 'Santé', value: 200 },
-];
-
-// Colors for the pie chart
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-const recentActivities = [
-  { activity: 'Nouveau parrain inscrit', date: '2024-09-27' },
-  { activity: 'Dons reçus', date: '2024-09-26' },
-  { activity: 'Enfant ajouté', date: '2024-09-25' },
-];
+const styles = {
+  dashboard: {
+    padding: "20px",
+    backgroundColor: "#f5f5f5",
+    minHeight: "100vh",
+  },
+  title: {
+    marginBottom: "30px",
+    color: "#1976d2",
+    fontWeight: "bold",
+  },
+  card: {
+    transition: "transform 0.3s",
+    display: "flex",
+    alignItems: "center",
+    "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+    },
+  },
+  icon: {
+    fontSize: "50px",
+    marginRight: "20px",
+  },
+};
 
 const Dashboard = () => {
-  return (
-    <div>
-      <h1>Dashboard</h1>
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    courrierEntrant: 0,
+    courrierSortant: 0,
+    direction: 0,
+    utilisateurs: 0,
+  });
+  const [monthlyStats, setMonthlyStats] = useState([]);
 
-      {/* Grid to display cards with stats */}
+  const pieData = [
+    { name: "Courriers Entrants", value: stats.courrierEntrant },
+    { name: "Courriers Sortants", value: stats.courrierSortant },
+    { name: "Directions", value: stats.direction },
+    { name: "Utilisateurs", value: stats.utilisateurs },
+  ];
+
+
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [entrantRes, sortantRes, directionRes, usersRes] =
+          await Promise.all([
+            fetch("http://localhost:4000/api/entrant/count"),
+            fetch("http://localhost:4000/api/sortant/count"),
+            fetch("http://localhost:4000/api/direction/count"),
+            fetch("http://localhost:4000/api/users/count"),
+          ]);
+
+        const [entrant, sortant, direction, users] = await Promise.all([
+          entrantRes.json(),
+          sortantRes.json(),
+          directionRes.json(),
+          usersRes.json(),
+        ]);
+
+        setStats({
+          courrierEntrant: entrant.count,
+          courrierSortant: sortant.count,
+          direction: direction.count,
+          utilisateurs: users.count,
+        });
+
+        // Fetch monthly stats
+        const monthlyResponse = await fetch(
+          "http://localhost:4000/api/stat/monthly"
+        );
+        const monthlyData = await monthlyResponse.json();
+        setMonthlyStats(monthlyData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.dashboard}>
+      <Typography variant="h4" style={styles.title}>
+        Tableau de Bord
+      </Typography>
+
+      {/* Cartes avec icônes */}
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ ...styles.card, backgroundColor: "#0088FE" }}>
             <CardContent>
-              <Typography variant="h6">Total Couriers</Typography>
-              <Typography variant="h4">024</Typography>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <MailOutline style={{ ...styles.icon, color: "#fff" }} />
+                <div>
+                  <Typography variant="h6" style={{ color: "#fff" }}>
+                    Courriers Entrants
+                  </Typography>
+                  <Typography variant="h4" style={{ color: "#fff" }}>
+                    {stats.courrierEntrant}
+                  </Typography>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ ...styles.card, backgroundColor: "#00C49F" }}>
             <CardContent>
-              <Typography variant="h6">Total Utilisateurs</Typography>
-              <Typography variant="h4">560</Typography>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Outbox style={{ ...styles.icon, color: "#fff" }} />
+                <div>
+                  <Typography variant="h6" style={{ color: "#fff" }}>
+                    Courriers Sortants
+                  </Typography>
+                  <Typography variant="h4" style={{ color: "#fff" }}>
+                    {stats.courrierSortant}
+                  </Typography>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ ...styles.card, backgroundColor: "#FFBB28" }}>
             <CardContent>
-              <Typography variant="h6">Total Direction</Typography>
-              <Typography variant="h4">23</Typography>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Business style={{ ...styles.icon, color: "#fff" }} />
+                <div>
+                  <Typography variant="h6" style={{ color: "#fff" }}>
+                    Directions
+                  </Typography>
+                  <Typography variant="h4" style={{ color: "#fff" }}>
+                    {stats.direction}
+                  </Typography>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ ...styles.card, backgroundColor: "#FF8042" }}>
             <CardContent>
-              <Typography variant="h6">Sommes actuels</Typography>
-              <Typography variant="h4">$125000</Typography>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <People style={{ ...styles.icon, color: "#fff" }} />
+                <div>
+                  <Typography variant="h6" style={{ color: "#fff" }}>
+                    Utilisateurs
+                  </Typography>
+                  <Typography variant="h4" style={{ color: "#fff" }}>
+                    {stats.utilisateurs}
+                  </Typography>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Grid for Chart and Recent Activities */}
-      <Grid container spacing={3} style={{ marginTop: '40px' }}>
-        {/* Line Chart */}
-        <Grid item xs={12} md={6}>
-          <div style={{ height: 400 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="users" stroke="#8884d8" activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="sales" stroke="#82ca9d" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </Grid>
-
-        {/* Pie Chart */}
+      {/* Graphiques */}
+      <Grid container spacing={3} style={{ marginTop: "40px" }}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Répartition des Dons</Typography>
+              <Typography variant="h6">Statistiques Mensuelles</Typography>
+              <div style={{ height: 400 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={monthlyStats}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="entrants"
+                      stroke="#8884d8"
+                      name="Courriers Entrants"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="sortants"
+                      stroke="#82ca9d"
+                      name="Courriers Sortants"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Répartition Globale</Typography>
               <div style={{ height: 400 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -104,38 +259,26 @@ const Dashboard = () => {
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
+                      label
                     >
                       {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
-                      <Label value="Dons" position="center" />
                     </Pie>
                     <Tooltip />
+                    <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Recent Activities */}
-        {/* <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Récentes Activités</Typography>
-              <ul>
-                {recentActivities.map((activity, index) => (
-                  <li key={index}>
-                    <Typography variant="body2">{activity.activity} - <i>{activity.date}</i></Typography>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </Grid> */}
       </Grid>
     </div>
   );
-}
+};
 
 export default Dashboard;
