@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+
 import { Modal, Button, Form, Dropdown } from "react-bootstrap";
 import "../assets/style/GestionCourrier.css";
+
 
 const API_BASE_URL = "http://localhost:4000/api";
 
@@ -9,8 +11,10 @@ function GestionCourrier() {
   const [courriers, setCourriers] = useState([]);
   const [directions, setDirections] = useState([]);
   const [showModal, setShowModal] = useState(false);
+
   const [modalAction, setModalAction] = useState("");
   const [courrierType, setCourrierType] = useState("Entrant");
+
   const [currentCourrier, setCurrentCourrier] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [feedback, setFeedback] = useState({ message: "", type: "" });
@@ -27,12 +31,14 @@ function GestionCourrier() {
 
   const fetchCourriers = async () => {
     try {
+
       const endpoint = `${API_BASE_URL}/${
         courrierType === "Entrant" ? "entrant" : "sortant"
       }`;
       const response = await fetch(endpoint);
       if (!response.ok)
         throw new Error("Erreur lors de la récupération des courriers");
+
       const data = await response.json();
       setCourriers(data);
     } catch (error) {
@@ -43,9 +49,11 @@ function GestionCourrier() {
 
   const fetchDirections = async () => {
     try {
+
       const response = await fetch(`${API_BASE_URL}/directions`);
       if (!response.ok)
         throw new Error("Erreur lors de la récupération des directions");
+
       const data = await response.json();
       setDirections(data);
     } catch (error) {
@@ -73,7 +81,9 @@ function GestionCourrier() {
 
   const handleShowModal = (action, courrier = {}) => {
     setModalAction(action);
+
     setCurrentCourrier(courrier);
+
     setShowModal(true);
   };
 
@@ -132,6 +142,7 @@ function GestionCourrier() {
         } avec succès`,
         "success"
       );
+
       fetchCourriers();
       handleCloseModal();
     } catch (error) {
@@ -139,6 +150,7 @@ function GestionCourrier() {
       showFeedback("Erreur lors de la sauvegarde", "danger");
     }
   };
+
 
   const handleDelete = async (id) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce courrier ?")) {
@@ -156,8 +168,10 @@ function GestionCourrier() {
         console.error(error);
         showFeedback("Erreur lors de la suppression", "danger");
       }
+
     }
   };
+
 
   const filteredCourriers = courriers.filter((courrier) =>
     courrier.numero_courrier?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -172,6 +186,7 @@ function GestionCourrier() {
       <div className="header d-flex align-items-center mb-3">
         <button
           className="btn btn-primary me-3"
+
           onClick={() => handleShowModal("Ajouter")}
         >
           Nouveau courrier
@@ -225,6 +240,7 @@ function GestionCourrier() {
         </thead>
 
         <tbody>
+
           {filteredCourriers.map((courrier) => (
             <tr key={courrier.id_entrant}>
               {courrierType === "Entrant" ? (
@@ -245,6 +261,7 @@ function GestionCourrier() {
                   <td>{courrier.nom_responsable}</td>
                 </>
               )}
+
               <td>
                 <FaEdit
                   className="icon edit-icon"
@@ -262,6 +279,8 @@ function GestionCourrier() {
         </tbody>
       </table>
 
+
+
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -270,6 +289,7 @@ function GestionCourrier() {
         </Modal.Header>
         <Modal.Body>
           <Form>
+
             {courrierType === "Entrant" ? (
               <>
                 <Form.Group className="mb-3" controlId="numCourrier">
@@ -403,6 +423,7 @@ function GestionCourrier() {
                 </Form.Group>
               </>
             )}
+
           </Form>
         </Modal.Body>
         <Modal.Footer>
