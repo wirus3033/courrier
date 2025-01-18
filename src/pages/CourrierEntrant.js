@@ -18,6 +18,7 @@ function CourrierEntrant() {
     date_BE: "",
     numero_BE: "",
     refence_courrier: "",
+    email_destinataire: "",
   });
   const [selectedCourrierId, setSelectedCourrierId] = useState(null);
   const [directions, setDirections] = useState([]);
@@ -69,6 +70,7 @@ function CourrierEntrant() {
         date_BE: "",
         numero_BE: "",
         refence_courrier: "",
+        email_destinataire: "",
       }
     );
     setSelectedCourrierId(id);
@@ -84,6 +86,7 @@ function CourrierEntrant() {
       date_BE: "",
       numero_BE: "",
       refence_courrier: "",
+      email_destinataire: "",
     });
   };
 
@@ -302,6 +305,20 @@ function CourrierEntrant() {
                     refence_courrier: e.target.value,
                   })
                 }
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Email du destinataire</Form.Label>
+              <Form.Control
+                type="email"
+                value={currentCourrier.email_destinataire}
+                onChange={(e) =>
+                  setCurrentCourrier({
+                    ...currentCourrier,
+                    email_destinataire: e.target.value,
+                  })
+                }
+                required
               />
             </Form.Group>
           </Form>

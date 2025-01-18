@@ -59,7 +59,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     courrierEntrant: 0,
     courrierSortant: 0,
-    direction: 0,
+    directions: 0,
     utilisateurs: 0,
   });
   const [monthlyStats, setMonthlyStats] = useState([]);
@@ -77,45 +77,56 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      
       try {
-        const [entrantRes, sortantRes, directionRes, usersRes] =
-          await Promise.all([
-            fetch("http://localhost:4000/api/entrant/count"),
-            fetch("http://localhost:4000/api/sortant/count"),
-            fetch("http://localhost:4000/api/direction/count"),
-            fetch("http://localhost:4000/api/users/count"),
-          ]);
 
-        const [entrant, sortant, direction, users] = await Promise.all([
-          entrantRes.json(),
-          sortantRes.json(),
-          directionRes.json(),
-          usersRes.json(),
-        ]);
+const fetchCounts = async () => {
+  try {
+      const entrantRes = await fetch("http://localhost:4000/api/entrant/count", { method: "GET" });
+      const sortantRes = await fetch("http://localhost:4000/api/sortant/count", { method: "GET" });
+      const directionRes = await fetch("http://localhost:4000/api/sortant/count", { method: "GET" });
+      const usersRes = await fetch("http://localhost:4000/api/entrant/count", { method: "GET" });
 
-        setStats({
-          courrierEntrant: entrant.count,
-          courrierSortant: sortant.count,
-          direction: direction.count,
-          utilisateurs: users.count,
-        });
+      // Extraire les données JSON de chaque réponse
+      const entrant = await entrantRes.json();
+      const sortant = await sortantRes.json();
+      const direction = await directionRes.json();
+      const users = await usersRes.json();
 
+      setStats({
+        courrierEntrant: entrant.count,
+        courrierSortant: sortant.count,
+        direction: direction.count,
+        utilisateurs: users.count,
+      });
+  } catch (error) {
+      console.error("Erreur lors de la récupération des données :", error);
+  }
+};
+
+// Appeler la fonction
+fetchCounts();
+
+  
+        
+  
         // Fetch monthly stats
         const monthlyResponse = await fetch(
           "http://localhost:4000/api/stat/monthly"
         );
         const monthlyData = await monthlyResponse.json();
         setMonthlyStats(monthlyData);
+  
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
-
+  
   if (loading) {
     return (
       <div
