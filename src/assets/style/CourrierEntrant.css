@@ -84,4 +84,12 @@
   .delete-icon:hover {
     color: #a71d2a;
   }
+
+  .icon.edit-icon[title="Imprimer"]:hover {
+    color: #007bff;
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
+  }
+  
   

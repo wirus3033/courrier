@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaInfoCircle } from "react-icons/fa";
 import { Modal, Button, Form } from "react-bootstrap";
 import "../assets/style/CourrierSortant.css";
 
@@ -20,6 +20,7 @@ function CourrierSortant() {
   });
   const [selectedCourrierId, setSelectedCourrierId] = useState(null);
   const [courrierEntrants, setCourrierEntrants] = useState([]);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     fetchCourriers();
@@ -29,6 +30,11 @@ function CourrierSortant() {
   useEffect(() => {
     filterCourriers();
   }, [searchTerm, courriers]);
+
+  const handleShowDetails = (courrier) => {
+    setCurrentCourrier(courrier);
+    setShowDetailsModal(true);
+  };
 
   const fetchCourrierEntrants = async () => {
     try {
@@ -78,6 +84,17 @@ function CourrierSortant() {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setCurrentCourrier({
+      numero_courrier: "",
+      date_sortie: "",
+      observation: "",
+      nom_prenom: "",
+      nom_responsable: "",
+    });
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetailsModal(false);
     setCurrentCourrier({
       numero_courrier: "",
       date_sortie: "",
@@ -197,6 +214,11 @@ function CourrierSortant() {
                   title="Supprimer"
                   onClick={() => handleShowAlertModal(courrier.id_sortant)}
                 />
+                <FaInfoCircle
+                  className="icon edit-icon"
+                  title="Détails"
+                  onClick={() => handleShowDetails(courrier)}
+                />
               </td>
             </tr>
           ))}
@@ -297,6 +319,44 @@ function CourrierSortant() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+            <Modal show={showDetailsModal} onHide={handleCloseDetails} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Détails du courrier</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="details-container">
+                  <p>
+                    <strong>Identification:</strong> {currentCourrier.id_sortant}
+                  </p>
+                  <p>
+                    <strong>Numéro Courrier:</strong>{" "}
+                    {currentCourrier.numero_courrier}
+                  </p>
+                  <p>
+                    <strong>Date sortie:</strong>{" "}
+                    {currentCourrier.date_sortie &&
+                      new Date(currentCourrier.date_sortie).toLocaleDateString("fr-FR")}
+                  </p>
+                  <p>
+                    <strong> observation:</strong> {currentCourrier.observation}
+                  </p>
+                  <p>
+                    <strong> Nom et prénom:</strong> {currentCourrier.nom_prenom}
+                  </p>
+                  <p>
+                    <strong>nom_responsable:</strong>{" "}
+                    {currentCourrier.nom_responsable}
+                  </p>
+
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseDetails}>
+                  Fermer
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
       <Modal show={showAlertModal} onHide={handleCloseAlertModal} centered>
         <Modal.Header closeButton>

@@ -84,4 +84,19 @@
   .delete-icon:hover {
     color: #a71d2a;
   }
+
+  .details-container {
+    padding: 10px;
+  }
+  
+  .details-container p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  
+  .details-container strong {
+    color: #666;
+    margin-right: 8px;
+  }
+  
   
