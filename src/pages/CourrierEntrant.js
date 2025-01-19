@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPrint, FaInfoCircle } from "react-icons/fa";
 import { Modal, Button, Form } from "react-bootstrap";
 import "../assets/style/CourrierEntrant.css";
+import jsPDF from "jspdf";
+import logo from "../assets/logoFinance.png";
 
 function CourrierEntrant() {
   const [courriers, setCourriers] = useState([]);
@@ -22,6 +24,7 @@ function CourrierEntrant() {
   });
   const [selectedCourrierId, setSelectedCourrierId] = useState(null);
   const [directions, setDirections] = useState([]);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     fetchCourriers();
@@ -100,6 +103,24 @@ function CourrierEntrant() {
     setCourrierId(null);
   };
 
+  const handleShowDetails = (courrier) => {
+    setCurrentCourrier(courrier);
+    setShowDetailsModal(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetailsModal(false);
+    setCurrentCourrier({
+      numero_courrier: "",
+      date_entree: "",
+      direction: "",
+      date_BE: "",
+      numero_BE: "",
+      refence_courrier: "",
+      email_destinataire: "",
+    });
+  };
+
   const handleSubmit = async () => {
     try {
       const url =
@@ -142,6 +163,65 @@ function CourrierEntrant() {
     } catch (error) {
       console.error("Erreur lors de la suppression:", error);
     }
+  };
+
+  const handlePrintFunction = (courrier) => {
+    const doc = new jsPDF();
+
+    // Ajout du logo
+    doc.addImage(logo, "PNG", 150, 10, 40, 40);
+
+    // En-tête
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Bordereau d'envoi", 105, 20, { align: "center" });
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    const startY = 60;
+    const lineHeight = 10;
+
+    doc.text(`Identification: ${courrier.id_entrant}`, 20, startY);
+    doc.text(
+      `Numéro Courrier: ${courrier.numero_courrier}`,
+      20,
+      startY + lineHeight
+    );
+    doc.text(
+      `Date Entrée: ${new Date(courrier.date_entree).toLocaleDateString(
+        "fr-FR"
+      )}`,
+      20,
+      startY + lineHeight * 2
+    );
+    doc.text(`Direction: ${courrier.direction}`, 20, startY + lineHeight * 3);
+    doc.text(
+      `Date BE: ${new Date(courrier.date_BE).toLocaleDateString("fr-FR")}`,
+      20,
+      startY + lineHeight * 4
+    );
+    doc.text(`Numéro BE: ${courrier.numero_BE}`, 20, startY + lineHeight * 5);
+    doc.text(
+      `Référence Courrier: ${courrier.refence_courrier}`,
+      20,
+      startY + lineHeight * 6
+    );
+    doc.text(
+      `Email destinataire: ${courrier.email_destinataire}`,
+      20,
+      startY + lineHeight * 7
+    );
+
+    // Pied de page
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(10);
+    doc.text("© 2025 - Tous droits réservés", 105, pageHeight - 10, {
+      align: "center",
+    });
+
+    // Génération du PDF
+    doc.save(`courrier_${courrier.numero_courrier}.pdf`);
   };
 
   return (
@@ -209,6 +289,17 @@ function CourrierEntrant() {
                   className="icon delete-icon"
                   title="Supprimer"
                   onClick={() => handleShowAlertModal(courrier.id_entrant)}
+                />
+                <FaPrint
+                  className="icon edit-icon"
+                  title="Imprimer"
+                  onClick={() => handlePrintFunction(courrier)}
+                />
+
+                <FaInfoCircle
+                  className="icon edit-icon"
+                  title="Détails"
+                  onClick={() => handleShowDetails(courrier)}
                 />
               </td>
             </tr>
@@ -329,6 +420,53 @@ function CourrierEntrant() {
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
             {modalAction}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showDetailsModal} onHide={handleCloseDetails} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Détails du courrier</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="details-container">
+            <p>
+              <strong>Identification:</strong> {currentCourrier.id_entrant}
+            </p>
+            <p>
+              <strong>Numéro Courrier:</strong>{" "}
+              {currentCourrier.numero_courrier}
+            </p>
+            <p>
+              <strong>Date Entrée:</strong>{" "}
+              {currentCourrier.date_entree &&
+                new Date(currentCourrier.date_entree).toLocaleDateString(
+                  "fr-FR"
+                )}
+            </p>
+            <p>
+              <strong>Direction:</strong> {currentCourrier.direction}
+            </p>
+            <p>
+              <strong>Date BE:</strong>{" "}
+              {currentCourrier.date_BE &&
+                new Date(currentCourrier.date_BE).toLocaleDateString("fr-FR")}
+            </p>
+            <p>
+              <strong>Numéro BE:</strong> {currentCourrier.numero_BE}
+            </p>
+            <p>
+              <strong>Référence Courrier:</strong>{" "}
+              {currentCourrier.refence_courrier}
+            </p>
+            <p>
+              <strong>Email destinataire:</strong>{" "}
+              {currentCourrier.email_destinataire}
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDetails}>
+            Fermer
           </Button>
         </Modal.Footer>
       </Modal>

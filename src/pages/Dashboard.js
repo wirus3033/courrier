@@ -19,12 +19,7 @@ import {
   Grid,
   CircularProgress,
 } from "@mui/material";
-import {
-  MailOutline,
-  Outbox,
-  Business,
-  People,
-} from "@mui/icons-material"; // Import des icônes
+import { MailOutline, Outbox, Business, People } from "@mui/icons-material"; // Import des icônes
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -71,62 +66,70 @@ const Dashboard = () => {
     { name: "Utilisateurs", value: stats.utilisateurs },
   ];
 
-
-  
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      
+
       try {
+        const fetchCounts = async () => {
+          try {
+            const entrantRes = await fetch(
+              "http://localhost:4000/api/entrant/count",
+              { method: "GET" }
+            );
+            const sortantRes = await fetch(
+              "http://localhost:4000/api/sortant/count",
+              { method: "GET" }
+            );
+            const directionRes = await fetch(
+              "http://localhost:4000/api/directions/count/total",
+              { method: "GET" }
+            );
+            const usersRes = await fetch(
+              "http://localhost:4000/api/users/count/total",
+              { method: "GET" }
+            );
 
-const fetchCounts = async () => {
-  try {
-      const entrantRes = await fetch("http://localhost:4000/api/entrant/count", { method: "GET" });
-      const sortantRes = await fetch("http://localhost:4000/api/sortant/count", { method: "GET" });
-      const directionRes = await fetch("http://localhost:4000/api/sortant/count", { method: "GET" });
-      const usersRes = await fetch("http://localhost:4000/api/entrant/count", { method: "GET" });
+            // Extraire les données JSON de chaque réponse
+            const entrant = await entrantRes.json();
+            const sortant = await sortantRes.json();
+            const direction = await directionRes.json();
+            const users = await usersRes.json();
+            console.log(entrant, sortant, direction, users);
 
-      // Extraire les données JSON de chaque réponse
-      const entrant = await entrantRes.json();
-      const sortant = await sortantRes.json();
-      const direction = await directionRes.json();
-      const users = await usersRes.json();
+            setStats({
+              courrierEntrant: entrant.count,
+              courrierSortant: sortant.count,
+              direction: direction.total,
+              utilisateurs: users.total,
+            });
+          } catch (error) {
+            console.error(
+              "Erreur lors de la récupération des données :",
+              error
+            );
+          }
+        };
 
-      setStats({
-        courrierEntrant: entrant.count,
-        courrierSortant: sortant.count,
-        direction: direction.count,
-        utilisateurs: users.count,
-      });
-  } catch (error) {
-      console.error("Erreur lors de la récupération des données :", error);
-  }
-};
+        // Appeler la fonction
+        fetchCounts();
 
-// Appeler la fonction
-fetchCounts();
-
-  
-        
-  
         // Fetch monthly stats
         const monthlyResponse = await fetch(
-          "http://localhost:4000/api/stat/monthly"
+          "http://localhost:4000/api/mounth/monthly"
         );
         const monthlyData = await monthlyResponse.json();
         setMonthlyStats(monthlyData);
-  
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
   if (loading) {
     return (
       <div
